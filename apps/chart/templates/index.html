@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block content %}
+  
+
+      
+     <script src="{{ STATIC_URL }}js/jquery.lazyload.min.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/blocksit.min.js"></script>
+      <div class="container" style='margin-top:0px;'>
+        <div class="page-header clearfix" style='margin-top:0px;' ><h1 class="pull-left" style='margin-top:0px;'>Customers</h1>
+          
+           <select id='business' class="selectpicker pull-right" data-width="auto" data-style="btn-inverse"  style=" margin:20px 0 0 0;">
+           
+                   {% for bus in business%}
+                        <option value="{{bus.id}}">{{bus.name}}</option>
+                    {% endfor %}
+          </select>
+
+         
+        </div>
+        <div class="row" id='chartdiv'>
+    
+        </div>
+        
+        <a id='begin'   href='javascript:$(window).scroll();' onstyle='display:none;margin:0px auto;'>更多》》》</a>
+        <div id='over' style='display:none;margin:0px auto;'>别拖了，没有更多了</div>
+      </div>
+      
+  
+   
+ 
+<script type="text/javascript">
+function GetDateStr(AddDayCount) {
+    var dd = new Date();
+    dd.setDate(dd.getDate()+AddDayCount);//获取AddDayCount天后的日期
+    var y = dd.getFullYear();
+    var m = dd.getMonth()+1;//获取当前月份的日期
+    var d = dd.getDate();
+    return y+"-"+m+"-"+d;
+}
+$(function () {
+    //修改当前业务下拉框
+    if(window.location.href.split('=').length >1){
+        $("#business").val(window.location.href.split('=')[1]);
+
+    }
+    //当前业务下客户图数据
+    var a = '{{chartdata}}';
+    a = a.replace(/\&\#39;/g,'"');
+    var chardata = eval(a);
+    var start = GetDateStr(-4).split('-');
+    chart_erea(chardata,start);
+
+    var  pbstr = '{{ customer }}';
+    var pb = pbstr.replace(/\&\#39;/g,'"');
+    pblist = eval(pb);
+
+ 
+    $(window).scroll(function(){
+       // 当滚动到最底部以上50像素时， 加载新内容
+        if ($(document).height() - $(this).scrollTop() - $(this).height()<50){
+            var postdata = '';
+            if(pblist.length >1){
+                var pbl = pblist.pop();
+                var pbl2 = pblist.pop();
+                postdata = postdata + pbl['code'].toString()+'-'+pbl['name']+','+pbl2['code'].toString()+'-'+pbl2['name'];
+                console.info(postdata);
+                //postdata.append(pblist.pop()['code']);
+            }else if(pblist.length > 0) {
+                var pbl = pblist.pop();
+                postdata = postdata + pbl['code'].toString()+'-'+pbl['name'];
+                console.info(postdata)
+                //postdata.append(pblist.pop()['code']);
+            }else{
+                
+                $('#begin').hide();
+                $('#over').show();
+                return 
+            }
+            var bus = $("#business").val();
+            $.ajax({
+                url:"/chart/pubuliu",
+                type:"post",
+                data:{
+                        "customer":postdata,
+                        "bus":bus
+                    },
+                dataType:"json",
+                success:function(data){
+                    chart_erea(data['chart_data'],start);
+
+                }
+            })
+            //$('#chartdiv').append($("#4485").html());          
+        }
+    });
+    //window resize
+    var currentWidth = 1100;
+    $(window).resize(function() {
+        var winWidth = $(window).width();
+        var conWidth;
+        if(winWidth < 660) {
+            conWidth = 440;
+            col = 2
+        } else if(winWidth < 880) {
+            conWidth = 660;
+            col = 3
+        } else if(winWidth < 1100) {
+            conWidth = 880;
+            col = 4;
+        } else {
+            conWidth = 1100;
+            col = 5;
+        }
+        
+        if(conWidth != currentWidth) {
+            currentWidth = conWidth;
+            $('#chartdiv').width(conWidth);
+             
+        }
+    });
+ 
+
+});
+//更改业务
+$("#business").change(function(){
+    window.location.href = "?current_business=" + $(this).val()
+})
+
+//画图
+function chart_erea(chardata,start){
+    console.info(chardata.length);
+    for(var i=0;i<chardata.length;i++){
+      
+      var chardiv = '<div class="well"><div id="'+chardata[i]['customer']+'" style="min-width: 310px; height: 200px; margin: 0 auto"></div></div>';
+     console.info(chardiv);
+     $('#chartdiv').append(chardiv);
+
+     $('#'+chardata[i]['customer']+'').highcharts({
+            chart: {
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title:{
+              text:chardata[i]['customer']
+            },
+            subtitle: {
+                text:  ''    
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom:   1 * 24 * 3600000, // one day 
+                 
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min:0,
+                title: {
+                    text: ' '
+                },
+                labels: {
+                             
+                    formatter: function() {
+                        var kb = this.value/1000;
+                        var m = kb/1000;
+                        var g = m/1000;
+                        if(kb<1000){
+                            return kb +'kb';
+                        }else if(m<1000){
+                            return  kb +'M';
+                        }else{
+                            return g +'G';
+                        }
+                     
+                        
+                    }
+                        },
+
+            },
+            tooltip: {
+                shared: false
+
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                    enabled: false
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    lineWidth: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+            series: [{
+                type: 'area',
+                name: 'Bandwith',
+                pointInterval: 300000,
+                pointStart: Date.UTC(start[0] , start[1], [2]),
+                data:chardata[i]['outdata']
+                 
+            }] });
+    }
+
+  }
+
+    </script>
+ {% endblock %}

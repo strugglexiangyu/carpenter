@@ -1,0 +1,39 @@
+{% load url from future %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebCache系统</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/login.css">
+</head>
+<body>
+<div class="content">
+    <div class="login-container">
+        <form class="form-login" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+            {% csrf_token %}
+            {% if form.errors %}
+            <span class="error">您的用户名或者密码不匹配，请重新输入</span>
+            {% endif %}
+            <div class="controls">
+                <label>用户名:</label>
+                <div class="control-group">
+                    <input id="id_username" name="username" type="text">
+                </div>
+            </div>
+            <div class="controls">
+                <label>密码:</label>
+                <div class="control-group">
+                    <input  id="id_password" name="password" type="password">
+                </div>
+            </div>
+            
+            <div class="from-actions">
+                <input class="btn-login" type="submit" value="" />
+                <input type="hidden" name="next" value="{{ next }}" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+

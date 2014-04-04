@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<button>submit</button>
+<script type="text/javascript">
+	$("button").click(function(){
+		var abc = '{"name":"ABC","code":"123456","channel":"CCAV","alarmtime":"1987-06-29 10:10:10","alarmtype":"SB","customer":"humen"}'; 
+		$.ajax({
+			url: '/dig/save/',
+			type: 'post',
+			dataType: 'json',
+			data: { "postdata" :abc },
+			success:function(data){
+				alert(data["status"])
+			}
+		})
+	})
+
+
+
+</script>
+{% endblock %}

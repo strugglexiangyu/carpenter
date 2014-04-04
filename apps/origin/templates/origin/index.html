@@ -1,0 +1,155 @@
+   {% extends 'base.html' %}
+{% block content %}
+  
+ 
+       
+
+  <div class="container-fluid">
+  <div class="row-fluid">
+  <div class="span12">
+ 
+  <div class="row-fluid">  
+   
+  <div class="span12">
+    <form method="get" action="" class="form-inline" >
+      <input id="channel_id" name="channel_id" {% if channelid %}value="{{channelid}}"{% endif %} type="text"  placeholder="频道编号" >
+      <div id="start_datepicker" class="input-append">
+        <input name="start" {% if start %}value="{{start}}"{% endif %} data-format="yyyy-MM-dd hh:mm" placeholder="开始日期:yyyy-MM-dd HH:mm" type="text" class="start_datetime"></input>
+         
+        <span class="add-on">
+          <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+        </i>
+        </span>
+      </div>
+      <div id="end_datepicker" class="input-append">
+        <input name="end" {% if end %}value="{{end}}"{% endif %} data-format="yyyy-MM-dd hh:mm" placeholder="结束日期:yyyy-MM-dd HH:mm" type="text"  class="end_datetime" ></input>
+        <span class="add-on">
+          <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+          </i>
+        </span>
+      </div>
+      <button type="submit" class="btn btn-primary"> <i class="icon-search icon-white"></i></button>
+    </form>
+  </div>
+</div>
+
+</div>
+
+</div> 
+
+{% if message %}
+<font style='color:red;'>{{message}}</font>
+{% endif %}
+
+</div>  
+
+<div id="loading">
+
+ <div class="row" id='chartdiv'>
+
+    <div class="well"> <div id="charts" style="min-width: 310px; height: 200px; margin: 0 auto"></div> </div>
+</div>
+
+</div>
+<script type="text/javascript">
+    $(".start_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+    $(".end_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+    $(function () {
+
+  var a = '{{data}}';
+  if(a!=''){
+  a = a.replace(/\&\#39;/g,'"');
+  chardata = eval(a);
+  var starttime = '{{start}}'.split('-')
+  $('#charts').highcharts({
+            chart: {
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title:{
+              text: ''
+            },
+            subtitle: {
+                text:  ''    
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom:   1 * 24 * 3600000, // one day 
+                 
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                min:0,
+                title: {
+                    text: ' '
+                },
+                labels: {               
+                    formatter: function() {
+                        var kb = this.value/1000;
+                        var m = kb/1000;
+                        var g = m/1000;
+                        if(kb<1000){
+                            return kb +'kb';
+                        }else if(m<1000){
+                            return  kb +'M';
+                        }else{
+                            return g +'G';
+                        }
+                     
+                        
+                    }
+                        },
+            },
+            tooltip: {
+                shared: false
+
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                    enabled: false
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    lineWidth: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+            series: [{
+                type: 'area',
+                name: 'Bandwith',
+                pointInterval: 300000,
+                pointStart: Date.UTC(starttime[0] , starttime[1], starttime[2].substr(0,2)),
+                data:chardata
+                 
+            }]
+        });
+     }
+    });
+    
+ 
+</script>
+
+    {% endblock %}

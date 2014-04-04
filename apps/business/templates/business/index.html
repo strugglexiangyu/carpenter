@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row clearfix">
+     <form method="post" name="myForm" action="#">
+     	
+     		<div class="clearfix" style="border-bottom:1px solid #ededed;padding:0px;">
+		     	<h3 style="padding:0px;" class="pull-left">客户信息</h3>
+                <select name="business" id="business" class="btn  pull-right" style="margin:10px 0 0 0;">
+     				
+                    {% for business in data%}
+						<option value="{{business.id}}">{{business.name}}</option>
+					{% endfor %}
+				</select>
+     		</div>	
+     	
+
+     	<div style=" padding:20px 0px 20px 200px; border-bottom:1px solid #ededed;"  class="clearfix">
+     		<span style="float: left;width:200px;text-align: left;">
+		     	<b style=" height:30px; line-height:30px; font-size:14px;">请选择:</b><br/>
+		     	<select
+			     	id="leftSID"
+			     	
+			     	multiple="multiple" 
+			     	style="width: 200px;height: 250px;text-align: left;" class="selectpicker">
+	     				{% for i in customer%}
+     						<option value="{{i.id}}">{{i.name}}</option>
+     					{% endfor %}
+		     	</select>
+    		</span> 
+    		
+    		<!-- 按钮; -->
+    		<span style="float: left;width:100px;text-align: center; padding:60px 0 0 0;">
+	    		<br/>
+	    		<input 
+		    		class="btn" 
+		    		type="button" value=">" 
+		    		style="0px solid blue" 
+		    		onclick="getLeftSelectOpt('leftSID','rightSID','sigleOption')">	    		
+	    			<br/><br/>
+	    		<input 
+		    		class="btn" 
+		    		type="button" 
+		    		value="&lt;" 
+		    		style="0px solid blue" 
+		    		onclick="getLeftSelectOpt('rightSID','leftSID','sigleOption')">
+	    			<br/><br/>
+                    <input class="btn btn-primary pull-left" style="margin:0px 0 0 20px;" value="提交" type="button" onclick="getRightSelectValue('rightSID')"/>
+    		</span>
+    		
+     		<span style="float: left;width:200px;text-align: left;">
+	 			<b style=" height:30px; line-height:30px; font-size:14px;">选择之后</<br/>
+		     	<select 
+			     	id="rightSID" 
+			     	name = "customer"
+			     	multiple="multiple" 
+			     	style="overflow:visible;width: 200px;height: 250px;">	
+		     	</select>
+	     	</span>
+            
+     	</div>
+     	
+     	
+     	
+     </form>
+    
+ </div>
+     <div class="row clearfix" style="padding:0 0 50px 0;">          
+        <div class="">
+            <form action="" method="post">
+             <table class="table table-hover table-bordered" style=" margin:0 auto;">
+                <tr class="info">
+                    <td>用户名称</td>
+                    <td>客户名称</td>
+                    <td>客户CODE</td>
+                    <td>用户名称</td>
+                    <td>业务名称</td>
+                    <td>业务CODE</td>
+                </tr>
+                {% for c in tableList%}
+                <tr >
+                    <td><input type="checkbox" name="delete" value="{{ c.id }}" class="deletecheck"></td>
+                    <td>{{c.name}}</td>
+                    <td>{{c.code}}</td>
+                    <td>{{c.users}}</td>
+                    <td>{{c.businessname}}</td>
+                    <td>{{c.businesscode}}</td>
+                </tr>
+                {% endfor %}
+             </table>
+            </form>
+            <button id="delete" class="btn btn-primary full-left" style="margin:20px 0 0 0;"  type="button">提交</button>
+        </div>
+    </div>
+<script type="text/javascript">
+
+
+    	//获取左边选择的;
+    	function getLeftSelectOpt(left,right,selectType){
+    		var leftSelectObj = document.getElementById(left);
+    		var rightSelectObj = document.getElementById(right);
+			var selectIndex = new Array();    //保存选中的select中的下标;
+			var m = 0;
+   			if(selectType!=null && selectType=='allOption'){
+	    		selectAllOption(left,right);
+    		}else{
+    			selectIndex.length = 0;
+    			for(var i = 0;i<leftSelectObj.length;i++){
+    				//获取选中的;
+    				if(leftSelectObj[i].selected){
+	    				//option中，第一个参数,是显示的名称，第二个是value;
+		    			var op=new Option(leftSelectObj[i].innerHTML,leftSelectObj[i].value);
+		    			rightSelectObj.options.add(op);
+		    			selectIndex.push(i);
+		    			//leftSelectObj.options.remove(i);
+		    			m++;
+	    			}
+	    		}
+	            
+	            //根据选中的name进行比较;
+	    		for(var i = 0;i<leftSelectObj.length;i++){
+	    			for(var x = 0;x<rightSelectObj.length;x++){
+	    				if(leftSelectObj[i].value ==rightSelectObj[x].value ){
+	    					leftSelectObj.options.remove(i);
+	    				}
+	    			}
+	    		}
+    		}	
+    	}
+    	
+    	//选择所有;
+    	function selectAllOption(left,right){
+    		var leftSelectOption = document.getElementById(left);
+    		var rightSelectOption =  document.getElementById(right);
+    		//循环;
+    		for(var i = 0;i<leftSelectOption.options.length;i++){
+   				//option中，第一个参数,是显示的名称，第二个是value;
+    			var op=new Option(leftSelectOption[i].innerHTML,leftSelectOption[i].value);
+    			rightSelectOption.options.add(op);
+		    }
+    		//清空左边select所以option;
+    		leftSelectOption.options.length = 0;
+    	}
+    	
+    	//获取右侧下拉框的方法;
+    	function getRightSelectValue(right){
+    		var rightValue = document.getElementById(right);
+    		var businessobj = document.getElementById("business");
+    		var business = businessobj.value
+            var result = "";
+    		for(var i = 0;i<rightValue.length;i++){
+    			result = result + rightValue[i].value +",";
+    		}
+    		
+    		if(result!=null && ""!=result){
+    			var inx = result.lastIndexOf(",");
+    			result = result.substring(0,inx);
+    		}else{
+    			result ="";
+    		}
+            $.ajax({
+                url:"/business/create/",
+                type:"post",
+                data:{
+                        "business":business,
+                        "customer":result
+                    },
+                dataType:"json",
+                success:function(data){
+                    window.location.href = ""
+                }
+            })
+    	}
+        $("#business").change(function(){
+            window.location.href = "?current_business=" + $(this).val()
+        })
+        $("#business").val('{{ businessID }}');
+        $("#delete").click(function(){
+            var delData = [];
+            $.each($(".deletecheck"),function(i,j){
+                if ($(j).prop("checked") == true){
+                    delData.push($(this).val());
+                }
+            })
+            var str = delData.join(',');
+            if(!str){
+                alert('no select !!');
+                return false;
+            }
+            $.ajax({
+                url:"/business/delete/",
+                type:"post",
+                data:{"delete":str},
+                dataType:"json",
+                success:function(data){
+                    window.location.href = ""
+                }
+
+            })
+        })
+
+    </script>
+{% endblock %}

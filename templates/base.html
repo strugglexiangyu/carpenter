@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>客服自助平台</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}images/favicon.ico">
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap-datetimepicker.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap-datetimepicker.min.css">
+    
+   
+    <!--[if IE 7]>
+      <link href="{{STATIC_URL}}css/font-awesome-4.0-ie7.min.css" media="all" rel="stylesheet" type="text/css" />
+      <link href="{{STATIC_URL}}css/ie7.css" media="all" rel="stylesheet" type="text/css" />
+    <![endif]-->
+    <link rel="stylesheet" href="{{ STATIC_URL }}noty/css/jquery.noty.css">
+    <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+   
+    <script src="{{ STATIC_URL }}noty/js/jquery.noty.js"></script>
+    <script src="{{ STATIC_URL }}js/highcharts.js"></script>
+    <script src="{{ STATIC_URL }}js/exporting.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-datetimepicker.min.js"></script>
+   
+    
+     
+    
+    <!--[if IE]>
+    <style ="text/css">.placeholderColor { color : #A9A9A9 !important; }</style>
+    <script type ="text/javascript" src="{{ STATIC_URL }}js/fixIePlaceholder.js"></script>
+    <![endif]-->
+  </head>
+  <body class="ie7">
+        <div class="navbar navbar-fluid-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <span class="brand">Carpenter V0.1</span>
+          <div class="container-fluid nav-collapse">
+            <ul class="nav">
+              <li id='origin' ><a href="/origin/index"   data-no-turbolink="">源站带宽</a></li>
+              <li id='chart'><a href="/chart/index"   class="loading">带宽变化预警</a></li>
+              <li id='user' ><a href="/business/index" class="loading">客户信息</a></li>
+              <li class="pull-right"><a href="/logout/" data-method="delete" rel="nofollow">退出</a> </li>
+    
+            </ul>  
+          </div> 
+        </div>
+      </div>
+    </div>
+    {% include "util/imessage.html" %}
+    {% block nav %}
+    {% endblock %}
+    {% block content %}
+    {% endblock %}
+<script>
+        $(document).ready(function(){
+            var pathname = window.location.pathname;
+            var path_name = pathname.split("/")
+            var name = path_name[1]
+            
+            $("#" + name).addClass("active");
+        })
+
+</script>
+
+  </body>
+
+</html>
+

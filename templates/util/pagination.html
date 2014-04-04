@@ -1,0 +1,37 @@
+{% load extras_tags %}
+<div class="pagination">
+    <ul>
+        {% if pages.has_previous %}
+        <li><a href="{{url}}?page={{ pages.previous_page_number }}{{param}}">上一页</a></li>
+        {% else %}
+        <li><a href="#">上一页</a></li>
+        {% endif %}
+
+        {% if 1 not in pages|page_recipe %}
+        <li><a href="{{url}}?page=1{{param}}">1</a></span>
+        <li><a href="#">...</a></li>
+        {% endif %}
+
+        {% for number in pages|page_recipe %}
+        <li id="page{{number}}"><a href="{{url}}?page={{ number }}{{param}}">{{ number }}</a></li>
+        {% endfor %}
+
+        {% if pages.paginator.num_pages not in pages|page_recipe %}
+        <li><a href="#">...</a></li>
+        <li><a href="{{url}}?page={{ pages.paginator.num_pages }}{{param}}">{{ pages.paginator.num_pages }}</a></span>
+        {% endif %}
+
+        {% if pages.has_next %}
+        <li><a href="{{url}}?page={{ pages.next_page_number }}{{param}}">下一页</a></li>
+        {% else %}
+        <li><a href="#">下一页</a></li>
+        {% endif %}
+    </ul>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#page" + {{ pages.number}}).addClass("active");
+    });
+</script>
+

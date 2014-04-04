@@ -1,0 +1,14 @@
+django==1.4.1
+mysql-python
+uwsgi
+simplejson
+coffin==0.3.7
+django-annoying
+PIL
+jinja2
+anyjson
+xlwt
+iptools
+pymongo
+django-celery
+xlrd
